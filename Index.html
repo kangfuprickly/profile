@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โปรไฟล์บุคลากรโรงเรียน</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --navy-primary: #0a192f;
+      --navy-dark: #020c1b;
+      --orange-accent: #f57c00;
+      --orange-gradient: linear-gradient(135deg, #ff9800, #f57c00);
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.15);
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: radial-gradient(circle at top right, #1e3a6a, var(--navy-dark));
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 12px;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--navy-dark);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+    }
+
+    .spinner {
+      width: 50px; height: 50px;
+      border: 5px solid rgba(245, 124, 0, 0.2);
+      border-top-color: var(--orange-accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .profile-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 35px 25px 25px 25px;
+      width: 100%;
+      max-width: 430px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      position: relative;
+      overflow: hidden;
+      display: none;
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 8px;
+      background: var(--orange-gradient);
+    }
+
+    .avatar-container {
+      width: 140px; height: 140px;
+      margin: 0 auto 20px auto;
+      position: relative;
+      border-radius: 50%;
+      padding: 5px;
+      background: var(--orange-gradient);
+      box-shadow: 0 8px 20px rgba(245, 124, 0, 0.3);
+    }
+
+    .avatar-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      background-color: #2a3b5c;
+      border: 4px solid var(--navy-primary);
+    }
+
+    .teacher-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .teacher-dept {
+      font-size: 0.95rem;
+      color: #ffb74d;
+      text-align: center;
+      font-weight: 500;
+      margin-bottom: 25px;
+    }
+
+    .info-item {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--orange-accent);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      color: #e2e8f0;
+    }
+
+    .alert-card {
+      background: rgba(220, 53, 69, 0.15);
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      text-align: center;
+      border-top: 6px solid #dc3545;
+      display: none;
+    }
+
+    .alert-icon {
+      font-size: 3.5rem;
+      color: #dc3545;
+      margin-bottom: 15px;
+    }
+
+    .school-footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 20px;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <p class="mt-3 text-muted" style="font-size: 0.9rem;">กำลังเรียกข้อมูลโปรไฟล์แบบปลอดภัยภายนอก...</p>
+  </div>
+
+  <div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 90vh;">
+    
+    <div class="alert-card shadow-lg" id="error-card">
+      <div class="alert-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+      <h5 class="text-white mb-2">เกิดข้อผิดพลาด</h5>
+      <p class="text-light mb-0" id="error-msg" style="font-size: 0.95rem; font-weight: 300;"></p>
+    </div>
+      
+    <div class="profile-card shadow-lg" id="profile-card">
+      <div class="avatar-container">
+        <img id="t-photo" src="" alt="Teacher Profile" class="avatar-img" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/initials/svg?seed=Teacher&backgroundColor=0a192f&textColor=ffffff';">
+      </div>
+
+      <h2 class="teacher-name" id="t-name">-</h2>
+      <div class="teacher-dept" id="t-dept">-</div>
+
+      <div class="info-body">
+        <div class="info-item">
+          <span class="info-label"><i class="fa-solid fa-id-badge me-2 text-warning"></i>รหัสบุคลากร</span>
+          <span class="info-value" id="t-id">-</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="fa-solid fa-address-card me-2 text-warning"></i>เลขบัตรประชาชน</span>
+          <span class="info-value" id="t-card">-</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="fa-solid fa-phone me-2 text-warning"></i>เบอร์โทรศัพท์</span>
+          <span class="info-value" id="t-phone">-</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="fa-solid fa-location-dot me-2 text-warning"></i>ที่อยู่ปัจจุบัน</span>
+          <span class="info-value" id="t-address">-</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="school-footer">
+      <i class="fa-solid fa-shield-halved me-1"></i> ระบบตรวจสอบข้อมูลบัตรโรงเรียนดิจิทัล V2
+    </div>
+  </div>
+
+  <script>
+    // ⚙️ ตั้งค่าลิงก์ CSV ของโรงเรียนพี่ตรงนี้
+    // วิธีเอาลิงก์ CSV: ใน Google Sheet ไปที่ ไฟล์ -> แชร์ -> เผยแพร่ทางเว็บ -> เลือกหน้า 'Responses' -> เลือกรูปแบบเป็น 'ค่าที่คั่นด้วยจุลภาค (.csv)' -> คัดลอกลิงก์นั้นมาวางแทนที่ข้างล่างนี้ครับ
+    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsivTY-FtLPJ49kIP1JLQ2u_mrt_G-NGbuS3HsoZnFZ_kG7lzE0wrjIY4F0CpHc602MI7MKpH60R2Z/pub?gid=1945678561&single=true&output=csv";
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const teacherId = urlParams.get('id'); // ดึงค่า ?id=00112 จาก URL เว็บใหม่
+
+      if (!teacherId) {
+        showError("กรุณาระบุรหัสบุคลากรใน URL (เช่น ?id=00112)");
+        return;
+      }
+
+      try {
+        // ดึงข้อมูลตรงจาก Google Sheet ในรูปแบบ CSV (ตัว LINE/FB จะไม่บล็อกแน่นอน)
+        const response = await fetch(GOOGLE_SHEET_CSV_URL);
+        if (!response.ok) throw new Error("ไม่สามารถเชื่อมต่อฐานข้อมูลโรงเรียนได้");
+        
+        const csvText = await response.text();
+        const rows = parseCSV(csvText);
+        
+        // ค้นหาแถวข้อมูลครู: คอลัมน์ B (Index 1) คือ รหัสครู
+        // โครงสร้างตาราง: B=teacherId(1), C=name(2), D=idCard(3), E=address(4), G=phone(6), H=department(7), I=photoUrl(8)
+        let foundTeacher = null;
+        for (let i = 1; i < rows.length; i++) {
+          if (rows[i][1] && rows[i][1].trim() === teacherId.trim()) {
+            foundTeacher = {
+              teacherId: rows[i][1],
+              name: rows[i][2],
+              idCard: rows[i][3],
+              address: rows[i][4],
+              phone: rows[i][6],
+              department: rows[i][7],
+              photoUrl: convertDriveUrl(rows[i][8])
+            };
+            break;
+          }
+        }
+
+        if (!foundTeacher) {
+          showError(`ไม่พบข้อมูลของรหัสบุคลากร: ${escapeHtml(teacherId)}`);
+          return;
+        }
+
+        // วาดข้อมูลลงบนหน้าจออย่างปลอดภัย
+        document.getElementById("t-name").textContent = foundTeacher.name || "-";
+        document.getElementById("t-dept").textContent = foundTeacher.department || "ไม่ระบุแผนก";
+        document.getElementById("t-id").textContent = foundTeacher.teacherId || "-";
+        document.getElementById("t-card").textContent = maskIdCard(foundTeacher.idCard) || "-";
+        document.getElementById("t-phone").textContent = foundTeacher.phone || "-";
+        document.getElementById("t-address").textContent = foundTeacher.address || "-";
+
+        const photoImg = document.getElementById("t-photo");
+        if (foundTeacher.photoUrl && foundTeacher.photoUrl.trim() !== "") {
+          photoImg.src = foundTeacher.photoUrl;
+        } else {
+          photoImg.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(foundTeacher.name)}&backgroundColor=0a192f&textColor=ffffff`;
+        }
+
+        document.getElementById("profile-card").style.display = "block";
+
+      } catch (err) {
+        showError("เกิดข้อผิดพลาดทางระบบ: " + err.message);
+      } finally {
+        // ปิดหน้าจอโหลดอัติโนมัติ
+        const loader = document.getElementById("loading-screen");
+        loader.style.opacity = "0";
+        setTimeout(() => { loader.style.display = "none"; }, 300);
+      }
+    });
+
+    // ฟังก์ชันย่อยสำหรับจัดการดึงค่าจาก CSV ที่มีระบบคอมม่าฉลาดๆ
+    function parseCSV(text) {
+      let p = '', r = [];
+      let q = false;
+      let row = [''];
+      for (let i=0; i<text.length; i++) {
+        let c = text[i];
+        let next = text[i+1];
+        if (c === '"') { if (q && next === '"') { row[row.length-1] += '"'; i++; } else { q = !q; } }
+        else if (c === ',' && !q) { row.push(''); }
+        else if ((c === '\r' || c === '\n') && !q) { if (c === '\r' && next === '\n') { i++; } r.push(row); row = ['']; }
+        else { row[row.length-1] += c; }
+      }
+      if (row.length > 1 || row[0] !== '') r.push(row);
+      return r;
+    }
+
+    function convertDriveUrl(url) {
+      if (!url) return "";
+      let fileId = "";
+      if (url.includes("/file/d/")) { fileId = url.split("/file/d/")[1].split("/")[0]; } 
+      else if (url.includes("id=")) { fileId = url.split("id=")[1].split("&")[0]; }
+      return fileId ? `https://drive.google.com/thumbnail?sz=w800&id=${fileId}` : url;
+    }
+
+    function maskIdCard(id) {
+      if (!id || id === "-") return "-";
+      let cleaned = String(id).trim();
+      return cleaned.length >= 13 ? cleaned.substring(0, 3) + "-XXXXX-XXX-" + cleaned.substring(11) : cleaned;
+    }
+
+    function showError(msg) {
+      document.getElementById("error-msg").textContent = msg;
+      document.getElementById("error-card").style.display = "block";
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+  </script>
+</body>
+</html>
