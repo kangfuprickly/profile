@@ -11,24 +11,40 @@
   <style>
     :root {
       --navy-primary: #0a192f;
-      --navy-dark: #020c1b;
-      --orange-accent: #f57c00;
-      --orange-gradient: linear-gradient(135deg, #ff9800, #f57c00);
-      --glass-bg: rgba(255, 255, 255, 0.08);
-      --glass-border: rgba(255, 255, 255, 0.15);
+      --navy-dark: #030712;
+      --orange-accent: #ff7600;
+      --orange-light: #ffaa44;
+      --orange-gradient: linear-gradient(135deg, #ff9800, #e65100);
+      --glass-bg: rgba(13, 27, 42, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.08);
     }
 
     body {
       font-family: 'Sarabun', sans-serif;
-      background: radial-gradient(circle at top right, #1e3a6a, var(--navy-dark));
-      color: #f1f5f9;
+      background: radial-gradient(circle at 80% 20%, #1a365d 0%, var(--navy-dark) 70%);
+      color: #f8fafc;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px 12px;
+      padding: 24px 16px;
+      margin: 0;
+      position: relative;
     }
 
+    /* แสงสะท้อนเรืองแสงด้านหลังการ์ดเพื่อความหรูหรา */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255, 118, 0, 0.1) 0%, rgba(0,0,0,0) 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Loading Screen เคลื่อนไหวสมูท */
     #loading-screen {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -38,120 +54,176 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .spinner {
-      width: 50px; height: 50px;
-      border: 5px solid rgba(245, 124, 0, 0.2);
+      width: 48px; height: 48px;
+      border: 4px solid rgba(255, 118, 0, 0.15);
       border-top-color: var(--orange-accent);
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* Ultra Premium Glassmorphic Card */
     .profile-card {
       background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 35px 25px 25px 25px;
+      border-radius: 28px;
+      padding: 40px 28px 32px 28px;
       width: 100%;
-      max-width: 430px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      max-width: 410px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 
+                  0 0 40px 0 rgba(255, 118, 0, 0.03);
       position: relative;
       overflow: hidden;
+      z-index: 1;
       display: none;
+      transform: translateY(10px);
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
+    @keyframes fadeInUp {
+      to { transform: translateY(0); }
+    }
+
+    /* เส้นแถบสีส้มด้านบนแบบพรีเมียมเรืองแสง */
     .profile-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0; height: 8px;
+      top: 0; left: 0; right: 0; height: 5px;
       background: var(--orange-gradient);
+      box-shadow: 0 2px 10px rgba(255, 118, 0, 0.4);
     }
 
+    /* กรอบรูปภาพออร่า */
     .avatar-container {
-      width: 140px; height: 140px;
-      margin: 0 auto 20px auto;
+      width: 136px; height: 136px;
+      margin: 0 auto 24px auto;
       position: relative;
       border-radius: 50%;
-      padding: 5px;
-      background: var(--orange-gradient);
-      box-shadow: 0 8px 20px rgba(245, 124, 0, 0.3);
+      padding: 4px;
+      background: linear-gradient(145deg, var(--orange-light), var(--orange-accent));
+      box-shadow: 0 10px 25px -5px rgba(255, 118, 0, 0.4);
     }
 
     .avatar-img {
       width: 100%; height: 100%;
       object-fit: cover;
       border-radius: 50%;
-      background-color: #2a3b5c;
-      border: 4px solid var(--navy-primary);
+      background-color: #1e293b;
+      border: 4px solid #0f172a;
     }
 
     .teacher-name {
-      font-size: 1.4rem;
-      font-weight: 600;
+      font-size: 1.5rem;
+      font-weight: 700;
       color: #ffffff;
       text-align: center;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
     }
 
     .teacher-dept {
       font-size: 0.95rem;
-      color: #ffb74d;
+      color: var(--orange-light);
       text-align: center;
       font-weight: 500;
-      margin-bottom: 25px;
+      margin-bottom: 32px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* การจัดกลุ่มรายการข้อมูล */
+    .info-body {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
 
     .info-item {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin-bottom: 12px;
-      border-left: 4px solid var(--orange-accent);
+      background: rgba(15, 23, 42, 0.45);
+      border-radius: 16px;
+      padding: 14px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.25s ease;
+    }
+
+    .info-item:hover {
+      background: rgba(15, 23, 42, 0.7);
+      border-color: rgba(255, 118, 0, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .info-icon-box {
+      width: 38px; height: 38px;
+      background: rgba(255, 118, 0, 0.12);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--orange-light);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .info-content {
       display: flex;
       flex-direction: column;
+      flex-grow: 1;
     }
 
     .info-label {
-      font-size: 0.8rem;
-      color: #94a3b8;
+      font-size: 0.75rem;
+      color: #64748b;
       font-weight: 600;
+      letter-spacing: 0.5px;
       margin-bottom: 2px;
     }
 
     .info-value {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #e2e8f0;
+      font-weight: 400;
+      word-break: break-word;
     }
 
+    /* หน้าต่างแจ้งเตือนข้อผิดพลาด */
     .alert-card {
-      background: rgba(220, 53, 69, 0.15);
-      border: 1px solid rgba(220, 53, 69, 0.3);
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 400px;
+      background: rgba(239, 68, 68, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 24px;
+      padding: 35px 25px;
+      max-width: 380px;
       text-align: center;
-      border-top: 6px solid #dc3545;
+      border-top: 5px solid #ef4444;
       display: none;
+      z-index: 1;
     }
 
     .alert-icon {
-      font-size: 3.5rem;
-      color: #dc3545;
-      margin-bottom: 15px;
+      font-size: 3rem;
+      color: #ef4444;
+      margin-bottom: 16px;
     }
 
     .school-footer {
       text-align: center;
       font-size: 0.75rem;
-      color: #64748b;
-      margin-top: 20px;
+      color: #475569;
+      margin-top: 28px;
       letter-spacing: 1px;
+      font-weight: 500;
+      z-index: 1;
     }
   </style>
 </head>
@@ -159,18 +231,18 @@
 
   <div id="loading-screen">
     <div class="spinner"></div>
-    <p class="mt-3 text-muted" style="font-size: 0.9rem;">กำลังเรียกข้อมูลโปรไฟล์แบบปลอดภัยภายนอก...</p>
+    <p class="mt-3 text-muted" style="font-size: 0.85rem; letter-spacing: 0.5px;">กำลังโหลดโปรไฟล์ดิจิทัล...</p>
   </div>
 
-  <div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 90vh;">
+  <div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 100vh;">
     
-    <div class="alert-card shadow-lg" id="error-card">
-      <div class="alert-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
-      <h5 class="text-white mb-2">เกิดข้อผิดพลาด</h5>
-      <p class="text-light mb-0" id="error-msg" style="font-size: 0.95rem; font-weight: 300;"></p>
+    <div class="alert-card shadow-2xl" id="error-card">
+      <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h5 class="text-white font-semibold mb-2">ไม่สามารถเข้าถึงข้อมูลได้</h5>
+      <p class="text-slate-400 mb-0" id="error-msg" style="font-size: 0.9rem; font-weight: 300;"></p>
     </div>
       
-    <div class="profile-card shadow-lg" id="profile-card">
+    <div class="profile-card shadow-2xl" id="profile-card">
       <div class="avatar-container">
         <img id="t-photo" src="" alt="Teacher Profile" class="avatar-img" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/initials/svg?seed=Teacher&backgroundColor=0a192f&textColor=ffffff';">
       </div>
@@ -180,53 +252,65 @@
 
       <div class="info-body">
         <div class="info-item">
-          <span class="info-label"><i class="fa-solid fa-id-badge me-2 text-warning"></i>รหัสบุคลากร</span>
-          <span class="info-value" id="t-id">-</span>
+          <div class="info-icon-box"><i class="fa-solid fa-id-badge"></i></div>
+          <div class="info-content">
+            <span class="info-label">รหัสบุคลากร</span>
+            <span class="info-value" id="t-id">-</span>
+          </div>
         </div>
+
         <div class="info-item">
-          <span class="info-label"><i class="fa-solid fa-address-card me-2 text-warning"></i>เลขบัตรประชาชน</span>
-          <span class="info-value" id="t-card">-</span>
+          <div class="info-icon-box"><i class="fa-solid fa-address-card"></i></div>
+          <div class="info-content">
+            <span class="info-label">เลขบัตรประชาชน</span>
+            <span class="info-value" id="t-card">-</span>
+          </div>
         </div>
+
         <div class="info-item">
-          <span class="info-label"><i class="fa-solid fa-phone me-2 text-warning"></i>เบอร์โทรศัพท์</span>
-          <span class="info-value" id="t-phone">-</span>
+          <div class="info-icon-box"><i class="fa-solid fa-phone"></i></div>
+          <div class="info-content">
+            <span class="info-label">เบอร์โทรศัพท์</span>
+            <span class="info-value" id="t-phone">-</span>
+          </div>
         </div>
+
         <div class="info-item">
-          <span class="info-label"><i class="fa-solid fa-location-dot me-2 text-warning"></i>ที่อยู่ปัจจุบัน</span>
-          <span class="info-value" id="t-address">-</span>
+          <div class="info-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+          <div class="info-content">
+            <span class="info-label">ที่อยู่ปัจจุบัน</span>
+            <span class="info-value" id="t-address">-</span>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="school-footer">
-      <i class="fa-solid fa-shield-halved me-1"></i> ระบบตรวจสอบข้อมูลบัตรโรงเรียนดิจิทัล V2
+      <i class="fa-solid fa-shield-halved me-1" style="color: var(--orange-accent);"></i> ระบบตรวจสอบข้อมูลบัตรโรงเรียนดิจิทัล
     </div>
   </div>
 
   <script>
-    // ⚙️ ตั้งค่าลิงก์ CSV ของโรงเรียนพี่ตรงนี้
-    // วิธีเอาลิงก์ CSV: ใน Google Sheet ไปที่ ไฟล์ -> แชร์ -> เผยแพร่ทางเว็บ -> เลือกหน้า 'Responses' -> เลือกรูปแบบเป็น 'ค่าที่คั่นด้วยจุลภาค (.csv)' -> คัดลอกลิงก์นั้นมาวางแทนที่ข้างล่างนี้ครับ
+    // ⚙️ วางลิงก์ข้อมูล CSV จาก Google Sheets ของพี่ที่ช่องว่างด้านล่างนี้ครับ
     const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsivTY-FtLPJ49kIP1JLQ2u_mrt_G-NGbuS3HsoZnFZ_kG7lzE0wrjIY4F0CpHc602MI7MKpH60R2Z/pub?gid=1945678561&single=true&output=csv";
 
     document.addEventListener("DOMContentLoaded", async function() {
       const urlParams = new URLSearchParams(window.location.search);
-      const teacherId = urlParams.get('id'); // ดึงค่า ?id=00112 จาก URL เว็บใหม่
+      const teacherId = urlParams.get('id');
 
       if (!teacherId) {
-        showError("กรุณาระบุรหัสบุคลากรใน URL (เช่น ?id=00112)");
+        showError("กรุณาระบุรหัสบุคลากรใน URL ผ่าน QR Code");
+        hideLoader();
         return;
       }
 
       try {
-        // ดึงข้อมูลตรงจาก Google Sheet ในรูปแบบ CSV (ตัว LINE/FB จะไม่บล็อกแน่นอน)
         const response = await fetch(GOOGLE_SHEET_CSV_URL);
-        if (!response.ok) throw new Error("ไม่สามารถเชื่อมต่อฐานข้อมูลโรงเรียนได้");
+        if (!response.ok) throw new Error("ไม่สามารถเชื่อมต่อคลาวด์ฐานข้อมูลได้");
         
         const csvText = await response.text();
         const rows = parseCSV(csvText);
         
-        // ค้นหาแถวข้อมูลครู: คอลัมน์ B (Index 1) คือ รหัสครู
-        // โครงสร้างตาราง: B=teacherId(1), C=name(2), D=idCard(3), E=address(4), G=phone(6), H=department(7), I=photoUrl(8)
         let foundTeacher = null;
         for (let i = 1; i < rows.length; i++) {
           if (rows[i][1] && rows[i][1].trim() === teacherId.trim()) {
@@ -244,13 +328,14 @@
         }
 
         if (!foundTeacher) {
-          showError(`ไม่พบข้อมูลของรหัสบุคลากร: ${escapeHtml(teacherId)}`);
+          showError(`ไม่พบข้อมูลของรหัสบุคลากร: ${teacherId}`);
+          hideLoader();
           return;
         }
 
-        // วาดข้อมูลลงบนหน้าจออย่างปลอดภัย
+        // วาดข้อมูลลงหน้าจออย่างปลอดภัย
         document.getElementById("t-name").textContent = foundTeacher.name || "-";
-        document.getElementById("t-dept").textContent = foundTeacher.department || "ไม่ระบุแผนก";
+        document.getElementById("t-dept").textContent = foundTeacher.department || "ทั่วไป / ไม่ระบุฝ่าย";
         document.getElementById("t-id").textContent = foundTeacher.teacherId || "-";
         document.getElementById("t-card").textContent = maskIdCard(foundTeacher.idCard) || "-";
         document.getElementById("t-phone").textContent = foundTeacher.phone || "-";
@@ -266,23 +351,16 @@
         document.getElementById("profile-card").style.display = "block";
 
       } catch (err) {
-        showError("เกิดข้อผิดพลาดทางระบบ: " + err.message);
+        showError("ระบบขัดข้อง: " + err.message);
       } finally {
-        // ปิดหน้าจอโหลดอัติโนมัติ
-        const loader = document.getElementById("loading-screen");
-        loader.style.opacity = "0";
-        setTimeout(() => { loader.style.display = "none"; }, 300);
+        hideLoader();
       }
     });
 
-    // ฟังก์ชันย่อยสำหรับจัดการดึงค่าจาก CSV ที่มีระบบคอมม่าฉลาดๆ
     function parseCSV(text) {
-      let p = '', r = [];
-      let q = false;
-      let row = [''];
+      let p = '', r = []; let q = false; let row = [''];
       for (let i=0; i<text.length; i++) {
-        let c = text[i];
-        let next = text[i+1];
+        let c = text[i]; let next = text[i+1];
         if (c === '"') { if (q && next === '"') { row[row.length-1] += '"'; i++; } else { q = !q; } }
         else if (c === ',' && !q) { row.push(''); }
         else if ((c === '\r' || c === '\n') && !q) { if (c === '\r' && next === '\n') { i++; } r.push(row); row = ['']; }
@@ -311,8 +389,12 @@
       document.getElementById("error-card").style.display = "block";
     }
 
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    function hideLoader() {
+      const loader = document.getElementById("loading-screen");
+      if(loader) {
+        loader.style.opacity = "0";
+        setTimeout(() => { loader.style.display = "none"; }, 400);
+      }
     }
   </script>
 </body>
